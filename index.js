@@ -34,6 +34,12 @@ let cactiController = null;
 let scaleRatio = null;
 let previousTime = null;
 let gameSpeed = GAME_SPEED_START;
+let gameOver = false;
+let hasAddedEventListenerforRestart = false;
+
+function updateGameSpeed(frameTimeDelta) {
+  gameSpeed += GAME_SPEED_INCREMENT * frameTimeDelta;
+}
 
 function createSprites(){
   const playerWidthInGame = PLAYER_WIDTH * scaleRatio;
@@ -90,28 +96,16 @@ function createSprites(){
       GROUND_AND_CACTUS_SPEED
     );
 }
-      
-
 function setScreen() {
   scaleRatio = getScaleRatio();
   canvas.width = GAME_WIDTH * scaleRatio;
   canvas.height = GAME_HEIGHT * scaleRatio;
   createSprites();
 }
-
-setScreen();
-//Use setTimeout on Safari mobile rotation otherwise works fine on desktop
-window.addEventListener("resize", () => setTimeout(setScreen, 500));
-
-if (screen.orientation) {
-  screen.orientation.addEventListener("change", setScreen);
-}
-
 function clearScreen(){
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width,canvas.height);
 }
-
 function getScaleRatio() {
   const screenHeight = Math.min(
     window.innerHeight,
@@ -130,7 +124,6 @@ function getScaleRatio() {
     return screenHeight / GAME_HEIGHT;
   }
 }
-
 function gameLoop(currentTime){
     if(previousTime === null){
         previousTime = currentTime;
@@ -141,6 +134,7 @@ function gameLoop(currentTime){
     previousTime = currentTime;
     clearScreen();
 
+    if (!gameOver) {
     //update game objects
     player1.setRunning(true);
     player2.setRunning(true);
@@ -148,6 +142,13 @@ function gameLoop(currentTime){
     player1.update(gameSpeed, frameTimeDelta);
     player2.update(gameSpeed, frameTimeDelta);
     cactiController.update(gameSpeed, frameTimeDelta);
+    updateGameSpeed(frameTimeDelta);
+    }
+    
+    if (!gameOver && (cactiController.collideWith(player1) || cactiController.collideWith(player2))) {
+      gameOver = true;
+      setupGameReset();
+    }
 
     //draw game objects
     ground.draw();
@@ -155,9 +156,12 @@ function gameLoop(currentTime){
     player2.draw();
     cactiController.draw();
 
+    if (gameOver) {
+      showGameOver();
+    }
+
     requestAnimationFrame(gameLoop);
 }
-
 function playerkeypad(){
   // Add custom key controls for each player
 window.addEventListener("keydown", (event) => {
@@ -168,6 +172,54 @@ window.addEventListener("keydown", (event) => {
   }
 });
 }
+function showGameOver() {
+  if (cactiController.collideWith(player2)){
+    const fontSize = 80 * scaleRatio;
+    ctx.font = `${fontSize}px Verdana`;
+    ctx.fillStyle = "grey";
+    const x = canvas.width/4.5;
+    const y = canvas.height/2.3;
+    ctx.fillText("Player 1 wins", x, y);
+  }else if (cactiController.collideWith(player1)){
+    const fontSize = 80 * scaleRatio;
+    ctx.font = `${fontSize}px Verdana`;
+    ctx.fillStyle = "grey";
+    const x = canvas.width/4.5;
+    const y = canvas.height/2.3;
+    ctx.fillText("Player 2 wins", x, y);
+  }else{
+    const fontSize = 80 * scaleRatio;
+    ctx.font = `${fontSize}px Verdana`;
+    ctx.fillStyle = "grey";
+    const x = canvas.width/4.5;
+    const y = canvas.height/2.3;
+    ctx.fillText("Game Over", x, y);
+  }
+  
+}
+function setupGameReset() {
+  if(!hasAddedEventListenerforRestart){
+    hasAddedEventListenerforRestart = true;
 
+    setTimeout(() => {
+       window.addEventListener("keyup", reset, {once: true});
+    }, 500);
+  }
+}
+function reset(){
+  hasAddedEventListenerforRestart = false;
+  gameOver = false;
+  ground.reset();
+  cactiController.reset();
+  gameSpeed = GAME_SPEED_START;
+}
+
+setScreen();
+//Use setTimeout on Safari mobile rotation otherwise works fine on desktop
+window.addEventListener("resize", () => setTimeout(setScreen, 500));
+
+if (screen.orientation) {
+  screen.orientation.addEventListener("change", setScreen);
+}
 playerkeypad();
 requestAnimationFrame(gameLoop);
