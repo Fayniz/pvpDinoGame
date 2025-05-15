@@ -1,26 +1,35 @@
 import Player from "./Player.js";
 import Ground from "./Ground.js";
+import CactiController from "./CactiController.js";
 
 const canvas = document.getElementById("game");
 const  ctx = canvas.getContext("2d");
 
-const GAME_SPEED_START = 0.75;
+const GAME_SPEED_START = 0.85;
 const GAME_SPEED_INCREMENT = 0.00001;
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 200;
 const PLAYER_WIDTH = 88/1.5;
 const PLAYER_HEIGHT = 94/1.5;
-const MAX_JUMP_HEIGHT = GAME_HEIGHT;
+const MAX_JUMP_HEIGHT = GAME_HEIGHT*0.75;
 const MIN_JUMP_HEIGHT = 150;
 const GROUND_WIDTH = 2400;
 const GROUND_HEIGHT = 24;
 const GROUND_AND_CACTUS_SPEED = 0.5;
 
+const cactusScale = 2;
+const CACTI_CONFIG = [
+  {width:48/cactusScale, height: 100/cactusScale, image: "images/cactus_1.png"},
+  {width:98/cactusScale, height: 100/cactusScale, image: "images/cactus_2.png"},
+  {width:68/cactusScale, height: 100/cactusScale, image: "images/cactus_3.png"}
+]
+
 //Game Object
 let player1 = null;
 let player2 = null;
 let ground = null;
+let cactiController = null;
 
 let scaleRatio = null;
 let previousTime = null;
@@ -52,7 +61,7 @@ function createSprites(){
     "images/inverted_standing_still.png",
     ["images/inverted_dino_run1.png", "images/inverted_dino_run2.png"]
     );
-    player2.x = 80 * scaleRatio;
+    player2.x = 400* scaleRatio;
 
     const groundWidthInGame = GROUND_WIDTH * scaleRatio;
     const groundHeightInGame = GROUND_HEIGHT * scaleRatio;
@@ -63,7 +72,25 @@ function createSprites(){
       GROUND_AND_CACTUS_SPEED,
       scaleRatio
     );
+
+    const cactiImages = CACTI_CONFIG.map(cactus => {
+      const image = new Image();
+      image.src = cactus.image;
+      return{
+        image:image,
+        width: cactus.width * scaleRatio,
+        height: cactus.height * scaleRatio,
+      };
+    });
+
+    cactiController = new CactiController(
+      ctx,
+      cactiImages,
+      scaleRatio,
+      GROUND_AND_CACTUS_SPEED
+    );
 }
+      
 
 function setScreen() {
   scaleRatio = getScaleRatio();
@@ -81,7 +108,7 @@ if (screen.orientation) {
 }
 
 function clearScreen(){
-    ctx.fillStyle = "white";
+    ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width,canvas.height);
 }
 
@@ -120,12 +147,27 @@ function gameLoop(currentTime){
     ground.update(gameSpeed, frameTimeDelta);
     player1.update(gameSpeed, frameTimeDelta);
     player2.update(gameSpeed, frameTimeDelta);
+    cactiController.update(gameSpeed, frameTimeDelta);
 
     //draw game objects
     ground.draw();
     player1.draw();
     player2.draw();
+    cactiController.draw();
+
     requestAnimationFrame(gameLoop);
 }
 
+function playerkeypad(){
+  // Add custom key controls for each player
+window.addEventListener("keydown", (event) => {
+  if (event.code === "KeyZ") {
+    player1.jumpPressed = true; // Player 1 uses Z
+  } else if (event.code === "KeyM") {
+    player2.jumpPressed = true; // Player 2 uses M
+  }
+});
+}
+
+playerkeypad();
 requestAnimationFrame(gameLoop);
