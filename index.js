@@ -174,19 +174,19 @@ window.addEventListener("keydown", (event) => {
 }
 function showGameOver() {
   if (cactiController.collideWith(player2)){
-    const fontSize = 80 * scaleRatio;
+    const fontSize = 30 * scaleRatio;
     ctx.font = `${fontSize}px Verdana`;
     ctx.fillStyle = "grey";
     const x = canvas.width/4.5;
     const y = canvas.height/2.3;
-    ctx.fillText("Player 1 wins", x, y);
+    ctx.fillText("Player 1 wins, press any button to restart", x, y);
   }else if (cactiController.collideWith(player1)){
-    const fontSize = 80 * scaleRatio;
+    const fontSize = 30 * scaleRatio;
     ctx.font = `${fontSize}px Verdana`;
     ctx.fillStyle = "grey";
     const x = canvas.width/4.5;
     const y = canvas.height/2.3;
-    ctx.fillText("Player 2 wins", x, y);
+    ctx.fillText("Player 2 wins, press any button to restart", x, y);
   }else{
     const fontSize = 80 * scaleRatio;
     ctx.font = `${fontSize}px Verdana`;

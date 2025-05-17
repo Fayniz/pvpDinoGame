@@ -41,12 +41,10 @@ export default class Player {
         this.isRunning = false;
         this.currentRunFrame = 0;
 
-        //keybard
-        window.removeEventListener('keydown', this.keydown)
-        window.removeEventListener('keyup', this.keyup)
+        //unphone
+        this.unphone = this.unphone.bind(this);
+        window.addEventListener('message', this.unphone)
 
-        window.addEventListener('keydown', this.keydown)
-        window.addEventListener('touchend', this.touchend)
     }
 
     touchstart = (event) => {
@@ -83,17 +81,15 @@ export default class Player {
         this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
-    keydown = (event)=>{
-        if(event.code == "Space"){
-            this.jumpPressed = true;
-        }
+  unphone(event) {
+    if (event.data === "jump") {
+      this.jumpPressed = true;
+      setTimeout(() => {
+        this.jumpPressed = false;
+      }, 100);
     }
-    keyup= (event)=>{
-        if(event.code == "Space"){
-            this.jumpPressed = false;
-        }
+  }
 
-    }
     jump(frameTimeDelta) {
     if (this.jumpPressed) {
       this.jumpInProgress = true;
