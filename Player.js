@@ -46,13 +46,6 @@ export default class Player {
         window.addEventListener('message', this.unphone)
 
     }
-
-    touchstart = (event) => {
-        this.jumpPressed = true;}
-    
-    touchend = (event) => { 
-        this.jumpPressed = false;
-    }
      update(gameSpeed, frameTimeDelta) {
         if (this.isRunning) {
             //console.log(this.jumpPressed);
