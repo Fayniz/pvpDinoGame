@@ -41,9 +41,26 @@ export default class Player {
         this.isRunning = false;
         this.currentRunFrame = 0;
 
-        //unphone
-        this.unphone = this.unphone.bind(this);
-        window.addEventListener('message', this.unphone)
+        // websocket
+        // Create WebSocket connection to your server
+        const socket = new WebSocket("ws://localhost:3000");
+
+        socket.onopen = () => {
+          console.log("✅ Connected to WebSocket server");
+        };
+
+        socket.onmessage = (event) => {
+          if (event.data === "jump") {
+            console.log("⬆ jump signal received");
+
+            // Replace this with your actual player logic:
+            this.jumpPressed = true;
+
+            setTimeout(() => {
+            this.jumpPressed = false;
+            }, 100);
+            }
+          };
 
     }
      update(gameSpeed, frameTimeDelta) {
@@ -73,15 +90,6 @@ export default class Player {
     draw() {
         this.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
-
-  unphone(event) {
-    if (event.data === "jump") {
-      this.jumpPressed = true;
-      setTimeout(() => {
-        this.jumpPressed = false;
-      }, 100);
-    }
-  }
 
     jump(frameTimeDelta) {
     if (this.jumpPressed) {
