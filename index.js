@@ -162,16 +162,33 @@ function gameLoop(currentTime){
 
     requestAnimationFrame(gameLoop);
 }
-function playerkeypad(){
-  // Add custom key controls for each player
-window.addEventListener("keydown", (event) => {
-  if (event.code === "KeyZ") {
-    player1.jumpPressed = true; // Player 1 uses Z
-  } else if (event.code === "KeyM") {
-    player2.jumpPressed = true; // Player 2 uses M
-  }
-});
-}
+function playerunphone(){
+  const socket = new WebSocket("ws://localhost:3000");
+
+  socket.onopen = () => {console.log("Connected to WebSocket server");};
+
+  socket.onmessage = (event) => {
+    if (event.data === "jump1") {
+      console.log("jump signal received");
+
+      this.jumpPressed = true;
+
+      setTimeout(() => {
+        this.jumpPressed = false;
+        }, 100);
+    }
+    else if (event.data === "jump2") {
+      console.log("jump signal received");
+
+      this.jumpPressed = true;
+
+      setTimeout(() => {
+        this.jumpPressed = false;
+        }, 100);
+    }
+  };
+};
+
 function showGameOver() {
   if (cactiController.collideWith(player2)){
     const fontSize = 30 * scaleRatio;
@@ -221,5 +238,5 @@ window.addEventListener("resize", () => setTimeout(setScreen, 500));
 if (screen.orientation) {
   screen.orientation.addEventListener("change", setScreen);
 }
-playerkeypad();
+playerunphone();
 requestAnimationFrame(gameLoop);

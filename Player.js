@@ -42,7 +42,6 @@ export default class Player {
         this.currentRunFrame = 0;
 
         // websocket
-        // Create WebSocket connection to your server
         const socket = new WebSocket("ws://localhost:3000");
 
         socket.onopen = () => {
@@ -51,9 +50,8 @@ export default class Player {
 
         socket.onmessage = (event) => {
           if (event.data === "jump") {
-            console.log("⬆ jump signal received");
+            console.log("jump signal received");
 
-            // Replace this with your actual player logic:
             this.jumpPressed = true;
 
             setTimeout(() => {
