@@ -162,7 +162,7 @@ function gameLoop(currentTime){
 
     requestAnimationFrame(gameLoop);
 }
-function playerunphone(){
+function playerUnphone(){
   const socket = new WebSocket("ws://localhost:3000");
 
   socket.onopen = () => {console.log("Connected to WebSocket server");};
@@ -171,19 +171,19 @@ function playerunphone(){
     if (event.data === "jump1") {
       console.log("jump signal received");
 
-      this.jumpPressed = true;
+      player1.jumpPressed = true;
 
       setTimeout(() => {
-        this.jumpPressed = false;
+      player1.jumpPressed = false;
         }, 100);
     }
     else if (event.data === "jump2") {
       console.log("jump signal received");
 
-      this.jumpPressed = true;
+      player2.jumpPressed = true;
 
       setTimeout(() => {
-        this.jumpPressed = false;
+        player2.jumpPressed = false;
         }, 100);
     }
   };
@@ -238,5 +238,5 @@ window.addEventListener("resize", () => setTimeout(setScreen, 500));
 if (screen.orientation) {
   screen.orientation.addEventListener("change", setScreen);
 }
-playerunphone();
+playerUnphone();
 requestAnimationFrame(gameLoop);
