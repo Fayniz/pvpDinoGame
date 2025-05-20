@@ -41,25 +41,6 @@ export default class Player {
         this.isRunning = false;
         this.currentRunFrame = 0;
 
-        // websocket
-        const socket = new WebSocket("ws://localhost:3000");
-
-        socket.onopen = () => {
-          console.log("✅ Connected to WebSocket server");
-        };
-
-        socket.onmessage = (event) => {
-          if (event.data === "jump") {
-            console.log("jump signal received");
-
-            this.jumpPressed = true;
-
-            setTimeout(() => {
-            this.jumpPressed = false;
-            }, 100);
-            }
-          };
-
     }
      update(gameSpeed, frameTimeDelta) {
         if (this.isRunning) {

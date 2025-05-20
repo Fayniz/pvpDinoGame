@@ -168,7 +168,7 @@ function playerUnphone(){
   socket.onopen = () => {console.log("Connected to WebSocket server");};
 
   socket.onmessage = (event) => {
-    if (event.data === "jump1") {
+    if (event.data === "jump") {
       console.log("jump signal received");
 
       player1.jumpPressed = true;
