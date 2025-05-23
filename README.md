@@ -10,17 +10,19 @@ When either trigger occurs, the Unphone sends an HTTP GET request to a specified
 
 ## Features
 
-* **Contextual Flick-to-Jump:** Utilizes the LSM6DS3TRC IMU to detect an upward flicking motion. This feature is **only active when the "DinoGame Controller" UI screen is displayed**
+* **Contextual Flick-to-Jump:** Utilises the LSM6DS3TRC IMU to detect an upward flicking motion. This feature is **only active when the "DinoGame Controller" UI screen is displayed**
     * Configurable sensitivity thresholds for gyroscope and accelerometer.
     * Cooldown period to prevent multiple triggers from a single flick.
 * **Button-Based Jump Trigger:**
-    * A new "DinoGame Controller" screen was added to the Unphone's main menu system.
-    * This screen features a visual indicator with player number.
+    * Utilises Unphone’s Button 1 to trigger jump manually.
+    * Button 3 is made to be as a TV remote control, specifically LG TV, power button. (This functionality is made for fun utilising external library by [crankyoldgit](https://github.com/crankyoldgit/IRremoteESP8266) )
 * **Network Communication:**
     * Connects to Wi-Fi using `WiFiMulti`.
     * Sends a "jump" command to a configurable game server via an HTTP GET request using `HTTPClient`.
 * **Custom Unphone UI:**
+    * A new "DinoGame Controller" screen was added to the Unphone's main menu system.
     * Integrates with the Unphone's existing GFX-based UI framework (`unPhoneUI0` from `everything`).
+    * This screen features a visual indicator with player number.
     * Demonstrates adding new screens and menu items.
 
 ## Hardware Requirements
@@ -43,6 +45,7 @@ The project is primarily structured around the main sketch (`sketch.ino`) and th
     * Implements `FLICK_COOLDOWN_MS` to prevent rapid re-triggering.
 * **Button Press Detection:**
     * In the `loop()`, call `u.button1()` (a method of the `unPhone` class) to check if the UI jump button was pressed.
+    * u.button3() is called to fire a burst of infrared signal matching command to power on/off a TV that is receiving NEC protocol.
 * **HTTP Client Logic:**
     * Uses `HTTPClient.h`.
     * When either a flick is detected or the button1 is pressed, it constructs an HTTP GET request (e.g., to `http://<host>:<port>/jump`).
@@ -76,7 +79,7 @@ This module manages the Unphone's graphical user interface using a custom framew
 
 ## Setup and Configuration (ESP32 - Unphone Side)
 
-1.  **Wi-Fi Credentials:** Configure your Wi-Fi SSID and password. This is done in a `private.h` file (which should be in the same directory as `sketch.ino`).
+1.  **Wi-Fi Credentials:** Configure your Wi-Fi SSID and password. This is done in a `private.h` file (which should be in the same directory as `sketch.ino`.
     Example `private.h` content:
     ```c++
     #define _MULTI_SSID1 "Your_WiFi_SSID"
@@ -158,12 +161,12 @@ nvm alias default 18
    ```
 
 2. Start the WebSocket server:
-
-   ```bash
+    ```bash
    node server.js
    ```
 
    Make sure port `3000` is available and not blocked by a firewall.
+
 
 * The game runs on a PC, served locally (e.g., by VS Code Live Server on port 5500 and WebSocket server on 3000).
 * This server environment must be configured to **listen for HTTP GET requests on the `/jump` path** (or whatever path you configure in the Unphone sketch).
@@ -171,15 +174,14 @@ nvm alias default 18
 
 ## How to Use
 
-1. **Configure:** Set up your Wi-Fi credentials, and the `host` IP address and `port` for your game server in the Unphone sketch.
-2. **Tune:** Adjust flick detection thresholds by observing sensor data during test flicks.
-3. **Upload:** Compile and upload the sketch to your Unphone device using PlatformIO or Arduino IDE.
-4. **Run Game Server:** Start your game and its associated server on your computer. Ensure it's accessible on your local network at the IP and port configured in the Unphone sketch.
-5. **Play:**
-
-   * Perform the "flick up" gesture with the Unphone.
-   * Alternatively, navigate to the "DinoGame Controller" screen on the Unphone and tap the "JUMP" button area.
-   * The Unphone should send an HTTP GET request to your game server, triggering the jump action.
+1.  **Configure:** Set up your Wi-Fi credentials, and the `host` IP address and `port` for your game server in the Unphone sketch.
+2.  **Tune:** Adjust flick detection thresholds by observing sensor data during test flicks.
+3.  **Upload:** Compile and upload the sketch to your Unphone device using PlatformIO or Arduino IDE.
+4.  **Run Game Server:** Start your game and its associated server on your computer. Ensure it's accessible on your local network at the IP and port configured in the Unphone sketch.
+5.  **Play:**
+    * Perform the "flick up" gesture with the Unphone.
+    * Alternatively, navigate to the "DinoGame Controller" screen on the Unphone and tap the "JUMP" button area.
+    * The Unphone should send an HTTP GET request to your game server, triggering the jump action.
 
 ## Troubleshooting/Notes
 
@@ -190,22 +192,21 @@ nvm alias default 18
 * **Firewall:** Ensure your computer's firewall is not blocking incoming connections to the game server port from other devices on your local network (like the Unphone).
 * **HTTP vs. WebSocket:** This project currently uses the Unphone as an HTTP client to send the jump command. The game is hosted on http server and listening to WebSocket server on another port. Unphone should request GET command in the websocket port instead.
 * **Library dependencies issue** If for some reason you keep getting build errors on dependencies (especially AsyncWebServer). Try:
-
   * Clear all download dependencies `rm -rf .pio/libdeps/unphone9/*`
   * Unzip “libraries9.zip” into libdeps `unzip libraries9.zip -d .pio/libdeps/unphone9` (Make sure to skip the unPhoneLibrary folder as this project derived some bit and pieces for the functionality)
   * Then upon compiling again it re-downloaded any missing dependencies and the error went away
 
-## Gambar Sini (GUI ke apa2 ke)
+## Gambar Sini (GUI ke apa2 ke) 
 
 ## Link video demonstration
-
 Youtube LINK
 
 ## Acknowledgements
 
 * The core Unphone class structure, including the GFX-based UI framework (`UIController`, `MenuUIElement`, etc. in `unPhoneUI0.cpp` and `unPhoneUI0.h`), is derived from or inspired by the examples and library provided by Hamish Cunningham for the unPhone project, available at
-[unphoneLibrary](https://gitlab.com/hamishcunningham/unphonelibrary).
+ [unphoneLibrary](https://gitlab.com/hamishcunningham/unphonelibrary).
 
-* The game mechanic, design, art sprites is derived from or inspired by a git repository available at
-[CodingWith-Adam](https://github.com/CodingWith-Adam/dino-game.git)
+* The game mechanic, design, art sprites is derived from or inspired by a git repository available at 
+[CodingWith-Adam](https://github.com/CodingWith-Adam/dino-game.git) 
 
+* The Switching TV off feature is inspired by a git repository available at [crankyoldgit](https://github.com/crankyoldgit/IRremoteESP8266) 
